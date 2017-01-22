@@ -1,5 +1,7 @@
 Buchbergers algorithm for computing Groebner Basis
 
+Polynomial bases are a generalization of systems of linear equations. In <a href="http://mathworld.wolfram.com/GaussianElimination.html">Gaussian elimination</a>, we take a system of linear equations and convert them to a basis where the solution becomes obvious.
+
 A framework is provided for defining polynomial ideals. The various objects that are a part of this solution form a hierarchical structure:
 
 PolynomialBasis -> Polynomial -> Monomial
