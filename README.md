@@ -1,4 +1,4 @@
-GroebnerBasis
+Buchbergers algorithm for computing Groebner Basis
 
 A framework is provided for defining polynomial ideals. The various objects that are a part of this solution form a hierarchical structure:
 
