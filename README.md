@@ -2,15 +2,6 @@ Buchbergers algorithm for computing Groebner Basis
 
 Polynomial bases are a generalization of systems of linear equations. If we have a system of linear equations, say - 
 
-% <![CDATA[
-\begin{align}
-\nabla_{\theta} E_x[f(x)] &= \nabla_{\theta} \sum_x p(x) f(x) & \text{definition of expectation} \\
-& = \sum_x \nabla_{\theta} p(x) f(x) & \text{swap sum and gradient} \\
-& = \sum_x p(x) \frac{\nabla_{\theta} p(x)}{p(x)} f(x) & \text{both multiply and divide by } p(x) \\
-& = \sum_x p(x) \nabla_{\theta} \log p(x) f(x) & \text{use the fact that } \nabla_{\theta} \log(z) = \frac{1}{z} \nabla_{\theta} z \\
-& = E_x[f(x) \nabla_{\theta} \log p(x) ] & \text{definition of expectation}
-\end{align} %]]>
-
 In <a href="http://mathworld.wolfram.com/GaussianElimination.html">Gaussian elimination</a>, we take a system of linear equations and convert them to a basis where the solution becomes obvious.
 
 A framework is provided for defining polynomial ideals. The various objects that are a part of this solution form a hierarchical structure:
