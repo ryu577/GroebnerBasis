@@ -115,6 +115,21 @@ namespace Polynomials
             return hash;
         }
 
+        public static Boolean operator >(Monomial m1, Monomial m2)
+        {
+            if (m1.Compare(m1, m2) == 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static Boolean operator <(Monomial m1, Monomial m2)
+        {
+            return true;
+        }
+
         /// <summary>
         /// Checks to see if this polynomial divides the dividend polynomial.
         /// This polynomial plays the role of would be divisor.

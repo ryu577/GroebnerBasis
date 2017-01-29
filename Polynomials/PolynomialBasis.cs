@@ -164,16 +164,16 @@ namespace Polynomials
         /// </summary>
         /// <param name="basis"></param>
         /// <returns></returns>
-        public static PolynomialBasis GrobnerBasisOptimized(params Polynomial[] basis)
+        public PolynomialBasis GrobnerBasisOptimized(params Polynomial[] basis)
         {
             int t = basis.Length;
-            List<Tuple<int, int>> b = new List<Tuple<int, int>>();
+            HashSet<Tuple<int, int>> b = new HashSet<Tuple<int, int>>();
 
             for (int i = 0; i < t; i++)
             {
-                for (int j = i; j < t; j++)
+                for (int j = (i+1); j < t; j++)
                 {
-                    b.Add(Tuple.Create(i, j));
+                    b.Add(Tuple.Create(i, j)); // i will always be less than j.
                 }
             }
 
@@ -181,17 +181,51 @@ namespace Polynomials
 
             while (b.Count > 0)
             {
-                int i = b[0].Item1;
-                int j = b[0].Item2;
+                Tuple<int, int> ij = b.First();
+                int i = ij.Item1;
+                int j = ij.Item2;
 
-                /*
-                if (basis[i].GetLeadingTerm().LCM(basis[j].GetLeadingTerm()).Equals(basis[i].GetLeadingTerm()) && !criterion()) // TODO: Implement multiply monomials.
+                if (!basis[i].GetLeadingTerm().LCM(basis[j].GetLeadingTerm()).Equals(basis[i].GetLeadingTerm().Multiply(basis[j].GetLeadingTerm())) 
+                    && !this.Criterion(i, j, b, groebner))
                 {
+                    Polynomial s = basis[i].GetSPolynomial(basis[j]).GetRemainder(groebner);
+                    if (!s.IsZero)
+                    {
+                        t++;
+                        //groebner.AddPolynomial(s);
+                        for (int l = 0; l < t; l++)
+                        {
+                            b.Add(Tuple.Create(l, t)); // l will always be smaller than t.
+                        }
+                    }
+                }
 
-                }*/
+                b.Remove(ij);
             }
 
             return groebner;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fi"></param>
+        /// <param name="fj"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        private bool Criterion(int i, int j, HashSet<Tuple<int, int>> b, PolynomialBasis basis)
+        {
+            List<Polynomial> listBasis = basis.polynomialData.ToList();
+            for (int k = 0; k < listBasis.Count; k++)
+            {                
+                if (!b.Contains(Tuple.Create(i,k)) && !b.Contains(Tuple.Create(j,k)) 
+                    && listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm()).Divides(listBasis[k].GetLeadingTerm()))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
