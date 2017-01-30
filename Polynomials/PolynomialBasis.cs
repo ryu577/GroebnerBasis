@@ -59,7 +59,7 @@ namespace Polynomials
         /// Checks to see if the two polynomial bases are equal.
         /// </summary>
         /// <param name="obj"></param>
-        /// <returns>A boolean value specifying if this polynomial is equal to the other or not.</returns>
+        /// <returns>A boolean value specifying if this polynomial basis is equal to the other or not.</returns>
         public override bool Equals(object obj)
         {
             PolynomialBasis other = (PolynomialBasis)obj;
@@ -162,8 +162,8 @@ namespace Polynomials
         /// <summary>
         /// Implementation incomplete.
         /// </summary>
-        /// <param name="basis"></param>
-        /// <returns></returns>
+        /// <param name="basis">An array of polynomials that are going to form the basis.</param>
+        /// <returns>A polynomial basis that wraps the polynomials in the basis.</returns>
         public PolynomialBasis GrobnerBasisOptimized(params Polynomial[] basis)
         {
             int t = basis.Length;
@@ -185,7 +185,7 @@ namespace Polynomials
                 int i = ij.Item1;
                 int j = ij.Item2;
 
-                if (!basis[i].GetLeadingTerm().LCM(basis[j].GetLeadingTerm()).Equals(basis[i].GetLeadingTerm().Multiply(basis[j].GetLeadingTerm())) 
+                if (basis[i].GetLeadingTerm().LCM(basis[j].GetLeadingTerm()) != basis[i].GetLeadingTerm().Multiply(basis[j].GetLeadingTerm())
                     && !this.Criterion(i, j, b, groebner))
                 {
                     Polynomial s = basis[i].GetSPolynomial(basis[j]).GetRemainder(groebner);
@@ -207,11 +207,12 @@ namespace Polynomials
         }
 
         /// <summary>
-        /// 
+        /// The criterion from section 2.9 of CLO. Details pending a reading of the section.
         /// </summary>
-        /// <param name="fi"></param>
-        /// <param name="fj"></param>
+        /// <param name="i"></param>
+        /// <param name="j"></param>
         /// <param name="b"></param>
+        /// <param name="basis"></param>
         /// <returns></returns>
         private bool Criterion(int i, int j, HashSet<Tuple<int, int>> b, PolynomialBasis basis)
         {

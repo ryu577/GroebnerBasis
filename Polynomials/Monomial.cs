@@ -127,6 +127,31 @@ namespace Polynomials
 
         public static Boolean operator <(Monomial m1, Monomial m2)
         {
+            if (m1.Compare(m1, m2) == -1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static Boolean operator ==(Monomial m1, Monomial m2)
+        {
+            if (m1.Equals(m2))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static Boolean operator !=(Monomial m1, Monomial m2)
+        {
+            if (m1.Equals(m2))
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -157,7 +182,7 @@ namespace Polynomials
         /// <returns>true if divisibility is possible</returns>
         public bool IsDividedBy(Monomial divisor)
         {
-            // TODO: Handle the case when the number of terms in the two polynomials is different.
+            // TODO: Handle the case when the number of variables in the two monomials is different.
             for (int i = 0; i < this.powers.Length; i++)
             {
                 if (divisor.powers[i] > this.powers[i])

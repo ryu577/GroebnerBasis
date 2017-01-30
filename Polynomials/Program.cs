@@ -22,6 +22,14 @@ namespace Polynomials
             System.Console.WriteLine("##Groebner basis##");
             TestGroebnerBasisCLOExample1Secn2Pt7();
 
+            Monomial m1 = new Monomial(new int[] { 3, 0, 0 });
+            Monomial m2 = new Monomial(new int[] { 1, 2, 3});
+            Monomial.orderingScheme = "grlex";
+            if (m1 > m2)
+            {
+                Console.Out.WriteLine("Monomial operators seem to be working!");
+            }
+
             System.Console.Read();
         }
 

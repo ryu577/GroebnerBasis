@@ -74,8 +74,8 @@ namespace Polynomials
         /// <summary>
         /// Checks if this polynomial is equal to the other one.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">The other polynomial in the comparison.</param>
+        /// <returns>A boolean indicating (if true) that the two polynomials are equal - have the exact same monomials.</returns>
         public override bool Equals(object obj)
         {
             Polynomial other = (Polynomial)obj;
@@ -110,6 +110,44 @@ namespace Polynomials
             }
 
             return hash;
+        }
+
+        /// <summary>
+        /// Checks if two polynomials are not equal to each other.
+        /// Usage: 
+        /// Polynomial p1 = new Polynomial(args), p2 = new Polynomial(args);
+        /// p1 != p2;
+        /// </summary>
+        /// <param name="p1">The first polynomial to check equality.</param>
+        /// <param name="p2">The second polynomial to check equality.</param>
+        /// <returns>A boolean which is true only if the two polynomials are equal to each other.</returns>
+        public static Boolean operator ==(Polynomial p1, Polynomial p2)
+        {
+            if (p1.Equals(p2))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if two polynomials are not equal to each other.
+        /// Usage: 
+        /// Polynomial p1 = new Polynomial(args), p2 = new Polynomial(args);
+        /// p1 != p2;
+        /// </summary>
+        /// <param name="p1">The first polynomial to check equality.</param>
+        /// <param name="p2">The second polynomial to check equality.</param>
+        /// <returns>A boolean which is true only if the two polynomials are not equal to each other.</returns>
+        public static Boolean operator !=(Polynomial p1, Polynomial p2)
+        {
+            if (p1.Equals(p2))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
