@@ -47,6 +47,12 @@ namespace Polynomials
             this.powers = newPowers;
         }
 
+
+        public Monomial(params int[] powers)
+        {
+            this.powers = powers;
+        }
+
         public int Compare(object x, object y)
         {
             Monomial m1 = (Monomial)x;

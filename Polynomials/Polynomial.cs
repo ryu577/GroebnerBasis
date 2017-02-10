@@ -14,10 +14,10 @@ namespace Polynomials
     /// A polynomial can be defined as an ordered list of monomials.
     /// </summary>
     class Polynomial
-    {        
+    {
         public SortedDictionary<Monomial, double> monomialData;
         public bool IsZero = true;
-        private double zeroThreshold = 1e-4;        
+        private double zeroThreshold = 1e-4;
 
         /// <summary>
         /// Instatiates an instance of Polynomial class with a single monomial.
@@ -72,6 +72,37 @@ namespace Polynomials
         }
 
         /// <summary>
+        /// Instantiates an instance of Polynomial class with the given monomial array.        
+        /// </summary>
+        /// <param name="coefficients">A double array of coefficients for each monomial.</param>
+        /// <param name="monomialArray">An array of monomials.</param>
+        public Polynomial(double[] coefficients, params Monomial[] monomialArray)
+        {
+            this.IsZero = false;
+            this.monomialData = new SortedDictionary<Monomial, double>();
+            int i = 0;
+
+            foreach (Monomial m in monomialArray)
+            {
+                this.monomialData.Add(m, coefficients[i++]);
+            }
+        }
+
+        /// <summary>
+        /// Instantiates an instance of Polynomial class.
+        /// Takes a monomial array and assumes the coefficients are all 1. 
+        /// </summary>
+        /// <param name="monomialArray">An array of monomials that are to form the polynomial.</param>
+        public Polynomial(params Monomial[] monomialArray)
+        {
+            this.IsZero = false;
+            foreach (Monomial m in monomialArray)
+            {
+                this.monomialData.Add(m, 1.0);
+            }
+        }
+
+        /// <summary>
         /// Checks if this polynomial is equal to the other one.
         /// </summary>
         /// <param name="obj">The other polynomial in the comparison.</param>
@@ -87,7 +118,7 @@ namespace Polynomials
 
             foreach (Monomial m in other.monomialData.Keys)
             {
-                if (!this.monomialData.ContainsKey(m))
+                if (!this.monomialData.ContainsKey(m) || this.monomialData[m] != other.monomialData[m])
                 {
                     return false;
                 }
@@ -151,6 +182,30 @@ namespace Polynomials
         }
 
         /// <summary>
+        /// Adds two polynomials
+        /// </summary>
+        /// <param name="p1">The first polynomial to add</param>
+        /// <param name="p2">The second polynomial to add</param>
+        /// <returns>The sum of the two polynomials.</returns>
+        public static Polynomial operator +(Polynomial p1, Polynomial p2)
+        {
+            p1.Add(p2);
+            return p1;
+        }
+
+        /// <summary>
+        /// Subtracts the second polynomial from the first one.
+        /// </summary>
+        /// <param name="p1">The first polynomial with a positive coefficient.</param>
+        /// <param name="p2">The second polynomial with a negative coefficient.</param>
+        /// <returns>The difference of the two polynomials.</returns>
+        public static Polynomial operator -(Polynomial p1, Polynomial p2)
+        {
+            p1.Add(p2, -1);
+            return p1;
+        }
+
+        /// <summary>
         /// Creates a copy of the object.
         /// </summary>
         /// <param name="other">The other instance to copy to.</param>
@@ -169,7 +224,7 @@ namespace Polynomials
         /// <summary>
         /// Gets the leading term as a monomial.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The leading term of the polynomial.</returns>
         public Monomial GetLeadingTerm()
         {
             return monomialData.Keys.Last();
@@ -179,7 +234,7 @@ namespace Polynomials
         /// Gets the leading term as a polynomial.
         /// </summary>
         /// <param name="negate">If true, the coefficient is negated. Useful for subtraction.</param>
-        /// <returns></returns>
+        /// <returns>Gets the leading terms of a polynomial.</returns>
         public Polynomial GetLeadingTermAsPolynomial(bool sign = true)
         {
             if (sign)
@@ -225,8 +280,8 @@ namespace Polynomials
         /// <summary>
         /// Adds a monomial to this polynomial. If it already contains the term, update the coefficient else add a new term.
         /// </summary>
-        /// <param name="m"></param>
-        /// <param name="coefficient"></param>
+        /// <param name="m">A monomial that will be added to this polynomial</param>
+        /// <param name="coefficient">The coefficient that will be multiplied to the monomial before adding to the polynomial.</param>
         public void AddMonomial(Monomial m, double coefficient = 1)
         {
             if (monomialData.ContainsKey(m))
@@ -366,12 +421,23 @@ namespace Polynomials
         /// <summary>
         /// Gets remainder on division by a polynomial basis.
         /// </summary>
-        /// <param name="basis"></param>
-        /// <returns></returns>
+        /// <param name="basis">The basis (or collection) of quitient polynomials.</param>
+        /// <returns>The remainder polynomial on division.</returns>
         public Polynomial GetRemainder(PolynomialBasis basis)
         {
             Polynomial[] divisorList = basis.polynomialData.ToArray();
             List<Polynomial> quotients = this.DivideBy(divisorList);
+            return quotients[quotients.Count - 1]; // The last element in the list is the remainder
+        }
+
+        /// <summary>
+        /// Gets remainder on division by a list of polynomials.
+        /// </summary>
+        /// <param name="dividends">The list of polynomials with which to divide by.</param>
+        /// <returns>The remainder on division as a polynomial.</returns>
+        public Polynomial GetRemainder(List<Polynomial> dividends)
+        {
+            List<Polynomial> quotients = this.DivideBy(dividends.ToArray());
             return quotients[quotients.Count - 1]; // The last element in the list is the remainder
         }
 
@@ -401,6 +467,7 @@ namespace Polynomials
         /// Adds other polynomial to this one.
         /// </summary>
         /// <param name="other">The polynomial to add to this one.</param>
+        /// <param name="coefficient">If the other polynomial has a coefficient attached to it. By default, this coefficient is one.</param>
         /// <returns>The result of the addition.</returns>
         public void Add(Polynomial other, double coefficient = 1)
         {

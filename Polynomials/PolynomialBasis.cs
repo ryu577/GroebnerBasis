@@ -13,7 +13,7 @@ namespace Polynomials
         /// <summary>
         /// Initializes a new instance of class PolynomialBasis
         /// </summary>
-        /// <param name="inputPolynomials"></param>
+        /// <param name="inputPolynomials">List of polynomials that will form the basis of the ideal.</param>
         public PolynomialBasis(List<Polynomial> inputPolynomials)
         {
             polynomialData = new HashSet<Polynomial>();
@@ -29,7 +29,7 @@ namespace Polynomials
         /// Initializes a new instance of class PolynomialBasis
         /// </summary>
         /// <param name="inputPolynomials">An array of input polynomials</param>
-        public PolynomialBasis(Polynomial[] inputPolynomials)
+        public PolynomialBasis(params Polynomial[] inputPolynomials)
         {
             polynomialData = new HashSet<Polynomial>();
 
@@ -58,7 +58,7 @@ namespace Polynomials
         /// <summary>
         /// Checks to see if the two polynomial bases are equal.
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="obj">An object that is parsed to another polynomial with which equality is to be tested.</param>
         /// <returns>A boolean value specifying if this polynomial basis is equal to the other or not.</returns>
         public override bool Equals(object obj)
         {
@@ -83,7 +83,7 @@ namespace Polynomials
         /// <summary>
         /// Generates hash code for the polynomial object.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An integer hash code for this polynomial basis.</returns>
         public override int GetHashCode()
         {
             int hash = 17;
@@ -118,21 +118,55 @@ namespace Polynomials
         }
 
         /// <summary>
+        /// Determinees if the current polynomial basis is a Groebner basis. 
+        /// Based on Buchbergers criterion from theorem 6 of section 6, CLO.
+        /// The one with the very intimidating proof.
+        /// </summary>
+        /// <returns>A boolean indicating Groebner or not.</returns>
+        public bool IsGroebnerBasis()
+        {
+            List<Polynomial> groebnerTempList = this.polynomialData.ToList();
+            for (int i = 0; i < this.polynomialData.Count; i++)
+            {
+                for (int j = (i + 1); j < this.polynomialData.Count; j++)
+                {
+                    Polynomial s = groebnerTempList[i].GetSPolynomial(groebnerTempList[j]).GetRemainder(this);
+                    if (!s.IsZero)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Adds the other polynomial to the current one.
+        /// </summary>
+        /// <param name="p">The polynomial that is to be added to this one.</param>
+        public void AddPolynomial(Polynomial p)
+        {
+            this.polynomialData.Add(p);
+        }
+
+        /// <summary>
         /// Computes the Groebner basis for a polynomial ideal using Buchbergers algorithm.
         /// </summary>
         /// <param name="basis">The basis that defines the ideal.</param>
         /// <returns>The Groebner basis.</returns>
-        public static PolynomialBasis GroebnerBasis(params Polynomial[] basis)
+        public static PolynomialBasis GetGroebnerBasis(params Polynomial[] basis)
         {
             PolynomialBasis groebner = new PolynomialBasis(basis);
-            return groebner.SimplifiedGroebnerBasis();
+            return groebner.SimplifiedBuchberger();
+            //return groebner.OptimizedBuchberger(basis); //TODO: Change to optimized Buchberger.
         }
 
         /// <summary>
         /// Computes Groebner basis for the polynomial basis. Based on Theorem 2 of sectin 2.7, CLO. Not very efficient.
         /// </summary>
         /// <returns>A polynomial basis that is the reduced Groebner basis.</returns>
-        public PolynomialBasis SimplifiedGroebnerBasis()
+        public PolynomialBasis SimplifiedBuchberger()
         {
             PolynomialBasis groebner = this;
             PolynomialBasis groebnerTemp = this;
@@ -155,7 +189,8 @@ namespace Polynomials
             }
             while (!groebner.Equals(groebnerTemp));
 
-            groebner.MakeMinimal();
+            groebner.MakeMinimal(); // First minimal and then reduced.
+            groebner.MakeReduced();
             return groebner;
         }
 
@@ -163,21 +198,21 @@ namespace Polynomials
         /// Implementation incomplete.
         /// </summary>
         /// <param name="basis">An array of polynomials that are going to form the basis.</param>
-        /// <returns>A polynomial basis that wraps the polynomials in the basis.</returns>
-        public PolynomialBasis GrobnerBasisOptimized(params Polynomial[] basis)
+        /// <returns>A polynomial basis that wraps the polynomials that make up the Groebner basis.</returns>
+        public PolynomialBasis OptimizedBuchberger(params Polynomial[] basis)
         {
-            int t = basis.Length;
+            int t = basis.Length - 1;
             HashSet<Tuple<int, int>> b = new HashSet<Tuple<int, int>>();
 
-            for (int i = 0; i < t; i++)
+            for (int i = 0; i <= t; i++)
             {
-                for (int j = (i+1); j < t; j++)
+                for (int j = i+1; j <= t; j++)
                 {
                     b.Add(Tuple.Create(i, j)); // i will always be less than j.
                 }
             }
-
             PolynomialBasis groebner = new PolynomialBasis(basis);
+            List<Polynomial> listBasis = basis.ToList();
 
             while (b.Count > 0)
             {
@@ -185,14 +220,15 @@ namespace Polynomials
                 int i = ij.Item1;
                 int j = ij.Item2;
 
-                if (basis[i].GetLeadingTerm().LCM(basis[j].GetLeadingTerm()) != basis[i].GetLeadingTerm().Multiply(basis[j].GetLeadingTerm())
-                    && !this.Criterion(i, j, b, groebner))
+                if (listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm()) != listBasis[i].GetLeadingTerm().Multiply(listBasis[j].GetLeadingTerm())
+                    && !this.Criterion(i, j, b, listBasis))
                 {
-                    Polynomial s = basis[i].GetSPolynomial(basis[j]).GetRemainder(groebner);
+                    Polynomial s = listBasis[i].GetSPolynomial(listBasis[j]).GetRemainder(new PolynomialBasis(listBasis)); // TODO: Implement remainder method that takes list. It will be more efficient.
                     if (!s.IsZero)
                     {
                         t++;
-                        //groebner.AddPolynomial(s);
+                        listBasis.Add(s);
+
                         for (int l = 0; l < t; l++)
                         {
                             b.Add(Tuple.Create(l, t)); // l will always be smaller than t.
@@ -203,20 +239,20 @@ namespace Polynomials
                 b.Remove(ij);
             }
 
-            return groebner;
+            return new PolynomialBasis(listBasis);
         }
 
         /// <summary>
-        /// The criterion from section 2.9 of CLO. Details pending a reading of the section.
+        /// The criterion from section 2.9 of CLO. 
+        /// TODO: Details pending a reading of the section.
         /// </summary>
         /// <param name="i"></param>
         /// <param name="j"></param>
         /// <param name="b"></param>
         /// <param name="basis"></param>
-        /// <returns></returns>
-        private bool Criterion(int i, int j, HashSet<Tuple<int, int>> b, PolynomialBasis basis)
+        /// <returns>A boolean which is true if the condition is satisfied.</returns>
+        private bool Criterion(int i, int j, HashSet<Tuple<int, int>> b, List<Polynomial> listBasis)
         {
-            List<Polynomial> listBasis = basis.polynomialData.ToList();
             for (int k = 0; k < listBasis.Count; k++)
             {                
                 if (!b.Contains(Tuple.Create(i,k)) && !b.Contains(Tuple.Create(j,k)) 
@@ -230,9 +266,11 @@ namespace Polynomials
         }
 
         /// <summary>
-        /// Converts the basis into a minimal one. Makes leading coefficients 1
-        /// and utilizes lemma 3 of chapter 2 (CLO) to eliminate polynomials that are not
-        /// essential to the basis.
+        /// Assumes current basis is already a Groebner basis and converts the basis into a minimal one. 
+        /// Makes leading coefficients 1 and utilizes lemma 3 of chapter 2 (CLO) to eliminate polynomials 
+        /// that are not essential to the basis.
+        /// (i) LC(p) = 1
+        /// (ii) For all p \in G, no monomial of p lies in <LT(G-{p})>
         /// To be run after the Buchberger algorithm to remove excess terms.
         /// </summary>
         public void MakeMinimal()
@@ -248,7 +286,7 @@ namespace Polynomials
             {
                 foreach (Polynomial p1 in this.polynomialData.ToList())
                 {
-                    if (p.GetLeadingTerm() != p1.GetLeadingTerm() && p.GetLeadingTerm().IsDividedBy(p1.GetLeadingTerm()))
+                    if (p != p1 && p.GetLeadingTerm().IsDividedBy(p1.GetLeadingTerm()))
                     { // If the leading term is divisible by the leading term of any other polynomial in the basis, we can get rid of it.
                         reducedPolynomials.Remove(p);
                     }
@@ -256,6 +294,29 @@ namespace Polynomials
             }
 
             this.polynomialData = reducedPolynomials;
+        }
+
+        /// <summary>
+        /// Assumes that this current basis is already minimal and converts it to reduced.
+        /// based on algorithm 2 from - https://www.kent.ac.uk/smsas/personal/gdb/MA574/week6.pdf
+        /// </summary>
+        public void MakeReduced()
+        {
+            var tempPolynomials = this.polynomialData.ToList();
+            Polynomial hi = polynomialData.ElementAt(0);
+            Polynomial gi;
+            tempPolynomials.RemoveAt(0);
+
+            for (int i = 0; i < tempPolynomials.Count; i++)
+            {
+                gi = hi.GetRemainder(tempPolynomials);
+                hi = tempPolynomials[i];
+                tempPolynomials[i] = gi;
+            }
+
+            gi = hi.GetRemainder(tempPolynomials);
+            tempPolynomials.Add(gi);
+            this.polynomialData = new HashSet<Polynomial>(tempPolynomials);
         }
     }
 }
