@@ -15,9 +15,20 @@ namespace Polynomials
     /// </summary>
     class Polynomial
     {
+        /// <summary>
+        /// Maintains the monomials that comprise the polynomial in sorted order.
+        /// </summary>
         public SortedDictionary<Monomial, double> monomialData;
+
+        /// <summary>
+        /// Is the given polynomial zero - no monomial coefficients.
+        /// </summary>
         public bool IsZero = true;
-        private double zeroThreshold = 1e-4;
+
+        /// <summary>
+        /// Zero threshold - comes in handy for floating point coefficients of the monomials, particularly during substraction.
+        /// </summary>
+        private static double zeroThreshold = 1e-4;
 
         /// <summary>
         /// Instatiates an instance of Polynomial class with a single monomial.
@@ -38,7 +49,7 @@ namespace Polynomials
         /// Instantiates an instance of Polynomial class with monomial data.
         /// </summary>
         /// <param name="monomialData">SortedDictionary to be fed into monomial.</param>
-        public Polynomial(SortedDictionary<Monomial,double> monomialData)
+        public Polynomial(SortedDictionary<Monomial, double> monomialData)
         {
             if (monomialData.Count > 0)
             {
@@ -471,16 +482,20 @@ namespace Polynomials
         /// <returns>The result of the addition.</returns>
         public void Add(Polynomial other, double coefficient = 1)
         {
-            if (this.IsZero && !other.IsZero)
+            if (other.IsZero)
+            { // Nothing to do.
+                return;
+            }
+            else if (this.IsZero)
             {
                 this.IsZero = false;
-            }
+            }            
 
             foreach (Monomial m in other.monomialData.Keys)
             {
                 if (this.monomialData.ContainsKey(m))
                 {
-                    if (Math.Abs(this.monomialData[m] + coefficient * other.monomialData[m]) < this.zeroThreshold) // Accounting for rounding error this way.
+                    if (Math.Abs(this.monomialData[m] + coefficient * other.monomialData[m]) < zeroThreshold) // Accounting for rounding error this way.
                     {
                         this.monomialData.Remove(m); // If the coefficients cancel, we can remove the term.
                         if (this.monomialData.Count == 0)
@@ -493,7 +508,7 @@ namespace Polynomials
                         this.monomialData[m] += coefficient * other.monomialData[m]; // Update the coefficient.
                     }
                 }
-                else if(Math.Abs(other.monomialData[m]) > this.zeroThreshold ) // You have to be this tall to enter this ride.
+                else if(Math.Abs(other.monomialData[m]) > zeroThreshold ) // You have to be this tall to enter this ride.
                 {
                     this.AddMonomial(m, coefficient * other.monomialData[m]); // Add a new term with its coefficient.
                 }

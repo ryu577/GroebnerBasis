@@ -10,34 +10,25 @@ namespace Polynomials
     {
         static void Main(string[] args)
         {
-            System.Console.WriteLine("##Univariate polynomial division##");
+            System.Console.WriteLine("## Univariate polynomial division ##");
             TestOneVariablePolynomialDivision();
 
-            System.Console.WriteLine("##Multivariate polynomial division##");
+            System.Console.WriteLine("## Multivariate polynomial division ##");
             TestMultiVariatePolynomialDivision();
 
-            System.Console.WriteLine("##S-polynomials##");
+            System.Console.WriteLine("## S-polynomials ##");
             TestSPolynomial();
 
-            System.Console.WriteLine("##LinearSystem");
-            TestGroebnerBasisLinearSystem();
-
-            System.Console.WriteLine("##Groebner basis##");
+            System.Console.WriteLine("## CLO Section 2.7 example 1 ##");
             TestGroebnerBasisCLOSecn2Pt7Example1();
 
-            // CLOSec2Pt7Exercise9();
+            System.Console.WriteLine("## LinearSystem ##");
+            TestGroebnerBasisLinearSystem();            
 
-            System.Console.Read();
-        }
+            System.Console.WriteLine("## CLO Section 2.7 exercise 9 ##");
+            CLOSec2Pt7Exerc9();
 
-        public static void CLOSec2Pt7Exercise9()
-        {
-            // x, y, z, w.
-            Polynomial p1 = new Polynomial(new double[] { 3, -6, -2, 0}, new Monomial(1, 0, 0, 0), new Monomial(0, 1, 0, 0), new Monomial(0, 0, 1, 0), new Monomial(0, 0, 0, 1));
-            Polynomial p2 = new Polynomial(new double[] { 2, -4, 0, 4 }, new Monomial(1, 0, 0, 0), new Monomial(0, 1, 0, 0), new Monomial(0, 0, 1, 0), new Monomial(0, 0, 0, 1));
-            Polynomial p3 = new Polynomial(new double[] { 1, -2, -1, -1 }, new Monomial(1, 0, 0, 0), new Monomial(0, 1, 0, 0), new Monomial(0, 0, 1, 0), new Monomial(0, 0, 0, 1));
-            PolynomialBasis pb = new PolynomialBasis(p1, p2, p3);
-            PolynomialBasis gb = PolynomialBasis.GetGroebnerBasis(p1, p2, p3);
+            System.Console.ReadKey();
         }
 
         public static void CheckMonomialOperators()
@@ -182,6 +173,18 @@ namespace Polynomials
             g.AddMonomial(new Monomial(new int[] { 1, 0 }), -1);
 
             PolynomialBasis gb = PolynomialBasis.GetGroebnerBasis(f, g);
+            PrintPolynomialBasis(gb);
+        }
+
+
+        public static void CLOSec2Pt7Exerc9()
+        {
+            Monomial.orderingScheme = "lex";
+            Polynomial p1 = new Polynomial(new double[] { 3, -6, -2}, new Monomial(1, 0, 0, 0), new Monomial(0, 1, 0, 0), new Monomial(0, 0, 1, 0));
+            Polynomial p2 = new Polynomial(new double[] { 2, -4, 4 }, new Monomial(1, 0, 0, 0), new Monomial(0, 1, 0, 0), new Monomial(0, 0, 0, 1));
+            Polynomial p3 = new Polynomial(new double[] { 1, -2, -1, -1 }, new Monomial(1, 0, 0, 0), new Monomial(0, 1, 0, 0), new Monomial(0, 0, 1, 0), new Monomial(0, 0, 0, 1));
+
+            PolynomialBasis gb = PolynomialBasis.GetGroebnerBasis(p1, p2, p3);
             PrintPolynomialBasis(gb);
         }
 

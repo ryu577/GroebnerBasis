@@ -118,7 +118,7 @@ namespace Polynomials
         }
 
         /// <summary>
-        /// Determinees if the current polynomial basis is a Groebner basis. 
+        /// Determines if the current polynomial basis is a Groebner basis. 
         /// Based on Buchbergers criterion from theorem 6 of section 6, CLO.
         /// The one with the very intimidating proof.
         /// </summary>
@@ -166,7 +166,7 @@ namespace Polynomials
         /// Computes Groebner basis for the polynomial basis. Based on Theorem 2 of sectin 2.7, CLO. Not very efficient.
         /// </summary>
         /// <returns>A polynomial basis that is the reduced Groebner basis.</returns>
-        public PolynomialBasis SimplifiedBuchberger()
+        private PolynomialBasis SimplifiedBuchberger()
         {
             PolynomialBasis groebner = this;
             PolynomialBasis groebnerTemp = this;
@@ -211,6 +211,7 @@ namespace Polynomials
                     b.Add(Tuple.Create(i, j)); // i will always be less than j.
                 }
             }
+
             PolynomialBasis groebner = new PolynomialBasis(basis);
             List<Polynomial> listBasis = basis.ToList();
 
@@ -254,8 +255,8 @@ namespace Polynomials
         private bool Criterion(int i, int j, HashSet<Tuple<int, int>> b, List<Polynomial> listBasis)
         {
             for (int k = 0; k < listBasis.Count; k++)
-            {                
-                if (!b.Contains(Tuple.Create(i,k)) && !b.Contains(Tuple.Create(j,k)) 
+            {
+                if (!b.Contains(Tuple.Create(i,k)) && !b.Contains(Tuple.Create(j,k))
                     && listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm()).Divides(listBasis[k].GetLeadingTerm()))
                 {
                     return true;
@@ -275,25 +276,40 @@ namespace Polynomials
         /// </summary>
         public void MakeMinimal()
         {
-            var reducedPolynomials = this.polynomialData;
-            // Now go through and make coefficients of all leading terms 1.
             foreach (Polynomial p in this.polynomialData)
             {
                 p.MakeLeadingTermCoefficientOne();
             }
 
-            foreach (Polynomial p in this.polynomialData.ToList())
+            HashSet<Polynomial> result = new HashSet<Polynomial>();
+            List<Polynomial> tempList = this.polynomialData.ToList();
+            bool[] excludeIndex = new bool[tempList.Count]; // Don't consider polynomials that have already been removed.
+
+            for (int i = 0; i < tempList.Count; i++)
             {
-                foreach (Polynomial p1 in this.polynomialData.ToList())
+                bool uniqueLeadingTerm = true;
+                for (int j = 0; j < tempList.Count; j++)
                 {
-                    if (p != p1 && p.GetLeadingTerm().IsDividedBy(p1.GetLeadingTerm()))
-                    { // If the leading term is divisible by the leading term of any other polynomial in the basis, we can get rid of it.
-                        reducedPolynomials.Remove(p);
+                    if (j == i || excludeIndex[j])
+                    {
+                        continue;
                     }
+
+                    if (tempList[i].GetLeadingTerm().IsDividedBy(tempList[j].GetLeadingTerm()))
+                    {
+                        uniqueLeadingTerm = false;
+                        excludeIndex[i] = true;
+                        break;
+                    }
+                }
+
+                if (uniqueLeadingTerm)
+                {
+                    result.Add(tempList[i]);
                 }
             }
 
-            this.polynomialData = reducedPolynomials;
+            this.polynomialData = result;
         }
 
         /// <summary>

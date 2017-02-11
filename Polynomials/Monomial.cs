@@ -11,6 +11,12 @@ namespace Polynomials
     {
         public int[] powers; // Consider uint instead of int.
 
+        /// <summary>
+        /// The ordering scheme the monomials are going to use. 
+        /// WARNING - This is a weak point in the code. The user should
+        /// set this only once when the polynomials/ basis are being
+        /// constructed and should not change it in the middle of computations.
+        /// </summary>
         public static string orderingScheme = "lex";
 
         /// <summary>
@@ -33,9 +39,9 @@ namespace Polynomials
         }
 
         /// <summary>
-        /// Instantiates the Monomial class.
+        /// Instantiates an instance of the Monomial class. Creates a deep copy of an existing monomial.
         /// </summary>
-        /// <param name="m"></param>
+        /// <param name="m">The existing monomial to be deep copied.</param>
         public Monomial(Monomial m)
         {
             int[] newPowers = new int[m.powers.Length];
@@ -86,7 +92,7 @@ namespace Polynomials
                 }
             }
 
-            return 0;            
+            return 0;
         }
 
         int IComparable.CompareTo(object obj)
