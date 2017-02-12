@@ -53,7 +53,10 @@ namespace Polynomials
             this.powers = newPowers;
         }
 
-
+        /// <summary>
+        /// Instantiates an instance of the <see cref="Monomial"/> class.
+        /// </summary>
+        /// <param name="powers">An int array of powers of the different variables.</param>
         public Monomial(params int[] powers)
         {
             this.powers = powers;
@@ -95,12 +98,23 @@ namespace Polynomials
             return 0;
         }
 
+        /// <summary>
+        /// Compares this monomial to another monomial passed as argument. This method is called as the comparator when adding 
+        /// monomials to the ordered dictionary behind the polynomial class.
+        /// </summary>
+        /// <param name="obj">The other monomial to compare to.</param>
+        /// <returns>An integer which is 1 if this monomial is bigger, -1 if obj is bigger and 0 if they are the same.</returns>
         int IComparable.CompareTo(object obj)
         {
             Monomial m = (Monomial)obj;
             return Compare(this, m);
         }
 
+        /// <summary>
+        /// Determines if this monomial is equal to another monomial passed as argument.
+        /// </summary>
+        /// <param name="obj">The other monomial with which the comparison is to be made.</param>
+        /// <returns>A boolean which is true if this monomial is equal to the one passed in the argument.</returns>
         public override bool Equals(object obj)
         {
             Monomial other = (Monomial)obj;
@@ -157,6 +171,12 @@ namespace Polynomials
             return false;
         }
 
+        /// <summary>
+        /// A wrapper for the <see cref="Equals(object)"/> method. 
+        /// </summary>
+        /// <param name="m1"></param>
+        /// <param name="m2"></param>
+        /// <returns></returns>
         public static Boolean operator !=(Monomial m1, Monomial m2)
         {
             if (m1.Equals(m2))

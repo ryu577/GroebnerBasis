@@ -240,7 +240,10 @@ namespace Polynomials
                 b.Remove(ij);
             }
 
-            return new PolynomialBasis(listBasis);
+            PolynomialBasis grb = new PolynomialBasis(listBasis);
+            grb.MakeMinimal(); // First minimal and then reduced.
+            grb.MakeReduced();
+            return grb;
         }
 
         /// <summary>
@@ -314,7 +317,8 @@ namespace Polynomials
 
         /// <summary>
         /// Assumes that this current basis is already minimal and converts it to reduced.
-        /// based on algorithm 2 from - https://www.kent.ac.uk/smsas/personal/gdb/MA574/week6.pdf
+        /// CAUTION - if basis is not already minimal, a non- descriptive exception will be thrown from somewhere in the monomial code.
+        /// Based on algorithm 2 from - https://www.kent.ac.uk/smsas/personal/gdb/MA574/week6.pdf
         /// </summary>
         public void MakeReduced()
         {
