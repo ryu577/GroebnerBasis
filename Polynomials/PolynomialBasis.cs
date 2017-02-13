@@ -10,6 +10,10 @@ namespace Polynomials
     {
         public HashSet<Polynomial> polynomialData;
 
+        private Dictionary<char, int> variableIndices;
+
+        private char[] indiceToVariable;
+
         /// <summary>
         /// Initializes a new instance of class PolynomialBasis
         /// </summary>
@@ -62,12 +66,18 @@ namespace Polynomials
         public PolynomialBasis(params string[] equations)
         {
             this.polynomialData = new HashSet<Polynomial>();
+            this.variableIndices = StringEquation.GetVariableInfo(equations);
+            this.indiceToVariable = new char[this.variableIndices.Count()];
+            int j = 0;
 
-            Dictionary<char, int> variables = StringEquation.GetVariableInfo(equations);
+            foreach (char c in this.variableIndices.Keys)
+            {
+                this.indiceToVariable[j++] = c;
+            }
 
             foreach (string eqn in equations)
             {
-                this.polynomialData.Add(StringEquation.PolynomialEqn(eqn, variables));
+                this.polynomialData.Add(StringEquation.PolynomialEqn(eqn, this.variableIndices));
             }
         }
 
@@ -332,7 +342,7 @@ namespace Polynomials
         }
 
         /// <summary>
-        /// Assumes that this current basis is already minimal and converts it to reduced.
+        /// Assumes that this current basis is already minimal and converts it to reduced (from Definition 5 of section 2.7, CLO).
         /// CAUTION - if basis is not already minimal, a non- descriptive exception will be thrown from somewhere in the monomial code.
         /// Based on algorithm 2 from - https://www.kent.ac.uk/smsas/personal/gdb/MA574/week6.pdf
         /// </summary>
@@ -353,6 +363,47 @@ namespace Polynomials
             gi = hi.GetRemainder(tempPolynomials);
             tempPolynomials.Add(gi);
             this.polynomialData = new HashSet<Polynomial>(tempPolynomials);
+        }
+
+        public void PrettyPrint()
+        {
+            int i = 0, j = 0;
+            foreach (Polynomial p in this.polynomialData)
+            {
+                System.Console.WriteLine("Polynomial - " + i++.ToString());
+                foreach (Monomial m in p.monomialData.Keys)
+                {
+                    if (this.indiceToVariable == null)
+                    {
+                        System.Console.WriteLine(string.Join(",", m.powers) + " * " + p.monomialData[m].ToString() + " + ");
+                    }
+                    else
+                    {
+                        System.Console.Write
+                        (
+                            (
+                                p.monomialData[m] > 0 ? " + " +
+                                    (p.monomialData[m] == 1 ? " " : p.monomialData[m].ToString()) 
+                                :   (p.monomialData[m] == -1 ? " - " : p.monomialData[m].ToString())
+                            )
+                        );
+
+                        for (j = 0; j < m.powers.Length; j++)
+                        {
+                            if (m.powers[j] > 1)
+                            {
+                                System.Console.Write(this.indiceToVariable[j] + "^" + m.powers[j]);
+                            }
+                            else if (m.powers[j] == 1)
+                            {
+                                System.Console.Write(this.indiceToVariable[j]);
+                            }
+                        }
+                    }
+                }
+
+                System.Console.WriteLine();
+            }
         }
     }
 }

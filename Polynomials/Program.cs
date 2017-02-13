@@ -42,14 +42,16 @@ namespace Polynomials
 
         public static void TestString2PolynomialBasis()
         {
+            Monomial.orderingScheme = "grlex";
+
             PolynomialBasis pb = new PolynomialBasis
             (
-                "2 x^2 y + 3 y^3 - 7",
-                "x^2 - y - 5",
-                "y^2 + 7y - xy"
+                "x^3 - 2xy",
+                "x^2y - 2y^2 + x"
             );
-
-            PrintPolynomialBasis(pb);
+                        
+            pb.SimplifiedBuchberger();
+            pb.PrettyPrint();
         }
 
         public static void CLOSectn2Pt8Exerc11()
