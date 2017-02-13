@@ -16,12 +16,12 @@ namespace Polynomials
         /// <param name="inputPolynomials">List of polynomials that will form the basis of the ideal.</param>
         public PolynomialBasis(List<Polynomial> inputPolynomials)
         {
-            polynomialData = new HashSet<Polynomial>();
+            this.polynomialData = new HashSet<Polynomial>();
 
             foreach (Polynomial p in inputPolynomials)
             {
                 Polynomial toAdd = new Polynomial(p);
-                polynomialData.Add(toAdd);
+                this.polynomialData.Add(toAdd);
             }
         }
 
@@ -31,27 +31,43 @@ namespace Polynomials
         /// <param name="inputPolynomials">An array of input polynomials</param>
         public PolynomialBasis(params Polynomial[] inputPolynomials)
         {
-            polynomialData = new HashSet<Polynomial>();
+            this.polynomialData = new HashSet<Polynomial>();
 
             foreach (Polynomial p in inputPolynomials)
             {
                 Polynomial toAdd = new Polynomial(p);
-                polynomialData.Add(toAdd);
+                this.polynomialData.Add(toAdd);
             }
         }
 
         /// <summary>
-        /// Initializes a new instance of class PolynomialBasis. Creates a deep copy of the input basis in a new instance.
+        /// Initializes a new instance of class <see cref="PolynomialBasis"/>. Creates a deep copy of the input basis in a new instance.
         /// </summary>
         /// <param name="inputBasis">The input basis which is to be deep copied.</param>
         public PolynomialBasis(PolynomialBasis inputBasis)
         {
-            polynomialData = new HashSet<Polynomial>();
+            this.polynomialData = new HashSet<Polynomial>();
 
             foreach (Polynomial p in inputBasis.polynomialData)
             {
                 Polynomial toAdd = new Polynomial(p);
-                polynomialData.Add(toAdd);
+                this.polynomialData.Add(toAdd);
+            }
+        }
+
+        /// <summary>
+        /// Instantiates an instance of <see cref="PolynomialBasis"/> given some equations in the form of strings.
+        /// </summary>
+        /// <param name="equations">An array of equations in the form of strings.</param>
+        public PolynomialBasis(params string[] equations)
+        {
+            this.polynomialData = new HashSet<Polynomial>();
+
+            Dictionary<char, int> variables = StringEquation.GetVariableInfo(equations);
+
+            foreach (string eqn in equations)
+            {
+                this.polynomialData.Add(StringEquation.PolynomialEqn(eqn, variables));
             }
         }
 
@@ -166,7 +182,7 @@ namespace Polynomials
         /// Computes Groebner basis for the polynomial basis. Based on Theorem 2 of sectin 2.7, CLO. Not very efficient.
         /// </summary>
         /// <returns>A polynomial basis that is the reduced Groebner basis.</returns>
-        private PolynomialBasis SimplifiedBuchberger()
+        public PolynomialBasis SimplifiedBuchberger()
         {
             PolynomialBasis groebner = this;
             PolynomialBasis groebnerTemp = this;

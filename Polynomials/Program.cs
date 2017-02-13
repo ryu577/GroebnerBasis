@@ -21,8 +21,7 @@ namespace Polynomials
 
             System.Console.WriteLine("\n## LinearSystem ##");
             TestGroebnerBasisLinearSystem();
-
-            /*
+            
             System.Console.WriteLine("\n## CLO Section 2.7 example 1 ##");
             TestGroebnerBasisCLOSecn2Pt7Example1();
 
@@ -34,9 +33,23 @@ namespace Polynomials
 
             System.Console.WriteLine("\n## CLO Section 2.8 exercise 11 ##");
             CLOSectn2Pt8Exerc11();
-            */
+
+            System.Console.WriteLine("\n## Parsing polynomials from a string ##");
+            TestString2PolynomialBasis();
 
             System.Console.ReadKey();
+        }
+
+        public static void TestString2PolynomialBasis()
+        {
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "2 x^2 y + 3 y^3 - 7",
+                "x^2 - y - 5",
+                "y^2 + 7y - xy"
+            );
+
+            PrintPolynomialBasis(pb);
         }
 
         public static void CLOSectn2Pt8Exerc11()
