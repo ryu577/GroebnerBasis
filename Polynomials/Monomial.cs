@@ -187,6 +187,11 @@ namespace Polynomials
             return true;
         }
 
+        public static Monomial operator *(Monomial m1, Monomial m2)
+        {
+            return m1.Multiply(m2);
+        }
+
         /// <summary>
         /// Checks to see if this polynomial divides the dividend polynomial.
         /// This polynomial plays the role of would be divisor.

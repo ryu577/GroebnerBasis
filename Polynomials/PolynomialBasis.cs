@@ -221,7 +221,7 @@ namespace Polynomials
         }
 
         /// <summary>
-        /// Implementation incomplete.
+        /// Optimized Buchberger implementation based on Theorem 11 of section 2.9.
         /// </summary>
         /// <param name="basis">An array of polynomials that are going to form the basis.</param>
         /// <returns>A polynomial basis that wraps the polynomials that make up the Groebner basis.</returns>
@@ -243,33 +243,42 @@ namespace Polynomials
 
             while (b.Count > 0)
             {
-                Tuple<int, int> ij = b.First();
-                int i = ij.Item1;
-                int j = ij.Item2;
-
-                if (listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm()) != listBasis[i].GetLeadingTerm().Multiply(listBasis[j].GetLeadingTerm())
-                    && !this.Criterion(i, j, b, listBasis))
+                List<Tuple<int, int>> bList = b.ToList();
+                foreach (Tuple<int, int> ij in bList)
                 {
-                    Polynomial s = listBasis[i].GetSPolynomial(listBasis[j]).GetRemainder(new PolynomialBasis(listBasis)); // TODO: Implement remainder method that takes list. It will be more efficient.
-                    if (!s.IsZero)
-                    {
-                        t++;
-                        listBasis.Add(s);
+                    //Tuple<int, int> ij = b.First();
+                    int i = ij.Item1;
+                    int j = ij.Item2;
 
-                        for (int l = 0; l < t; l++)
+                    if (listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm()) != listBasis[i].GetLeadingTerm() * (listBasis[j].GetLeadingTerm())
+                        && !this.Criterion(i, j, b, listBasis))
+                    {
+                        Polynomial s = listBasis[i].GetSPolynomial(listBasis[j]).GetRemainder(new PolynomialBasis(listBasis)); // TODO: Implement remainder method that takes list. It will be more efficient.
+                        if (!s.IsZero)
                         {
-                            b.Add(Tuple.Create(l, t)); // l will always be smaller than t.
+                            t++;
+                            listBasis.Add(s);
+
+                            for (int l = 0; l < t; l++)
+                            {
+                                b.Add(Tuple.Create(l, t)); // l will always be smaller than t.
+                            }
                         }
                     }
-                }
 
-                b.Remove(ij);
+                    b.Remove(ij);
+                }
             }
 
             PolynomialBasis grb = new PolynomialBasis(listBasis);
             grb.MakeMinimal(); // First minimal and then reduced.
             grb.MakeReduced();
             return grb;
+        }
+
+        public PolynomialBasis OptimizedBuchberger()
+        {
+            return this.OptimizedBuchberger(this.polynomialData.ToArray());
         }
 
         /// <summary>
@@ -285,8 +294,9 @@ namespace Polynomials
         {
             for (int k = 0; k < listBasis.Count; k++)
             {
-                if (!b.Contains(Tuple.Create(i,k)) && !b.Contains(Tuple.Create(j,k))
-                    && listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm()).Divides(listBasis[k].GetLeadingTerm()))
+                if (!b.Contains(Tuple.Create(i,k)) && !b.Contains(Tuple.Create(j,k)) && !b.Contains(Tuple.Create(k,i)) && !b.Contains(Tuple.Create(k,j))
+                    && listBasis[k].GetLeadingTerm().Divides(listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm())) 
+                    && k != i && k != j)
                 {
                     return true;
                 }
@@ -365,6 +375,10 @@ namespace Polynomials
             this.polynomialData = new HashSet<Polynomial>(tempPolynomials);
         }
 
+        /// <summary>
+        /// Prints the Groebner basis to console. If the mapping from indices to variable names is present (see private field), 
+        /// it will print in human readable format. Otherwise, it will print monomials as integer arrays.
+        /// </summary>
         public void PrettyPrint()
         {
             int i = 0, j = 0;
@@ -383,8 +397,8 @@ namespace Polynomials
                         (
                             (
                                 p.monomialData[m] > 0 ? " + " +
-                                    (p.monomialData[m] == 1 ? " " : p.monomialData[m].ToString()) 
-                                :   (p.monomialData[m] == -1 ? " - " : p.monomialData[m].ToString())
+                                    (p.monomialData[m] == 1 ? " " : p.monomialData[m].ToString())    // Don't print +1, just +
+                                :   (p.monomialData[m] == -1 ? " - " : p.monomialData[m].ToString()) // Don't print -1, just -
                             )
                         );
 

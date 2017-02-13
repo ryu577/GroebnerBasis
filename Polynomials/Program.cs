@@ -35,12 +35,28 @@ namespace Polynomials
             CLOSectn2Pt8Exerc11();
 
             System.Console.WriteLine("\n## Parsing polynomials from a string ##");
-            TestString2PolynomialBasis();
+            TestString2GroebnerBasis();
+
+            System.Console.WriteLine("\n## Testing optimized buchberger ##");
+            TestOptimizedBuchberger();
 
             System.Console.ReadKey();
         }
 
-        public static void TestString2PolynomialBasis()
+        public static void TestOptimizedBuchberger()
+        {
+            Monomial.orderingScheme = "grlex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "x^3 - 2xy",
+                "x^2y - 2y^2 + x"
+            );
+
+            PolynomialBasis gb = pb.OptimizedBuchberger(); // since gb doesn't have pb's indiceToVariable, we will get old fashioned printing.
+            gb.PrettyPrint();
+        }
+
+        public static void TestString2GroebnerBasis()
         {
             Monomial.orderingScheme = "grlex";
 
