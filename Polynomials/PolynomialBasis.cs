@@ -275,6 +275,10 @@ namespace Polynomials
             return grb;
         }
 
+        /// <summary>
+        /// A wrapper for optimized buchberger that can be called through the object of this class
+        /// </summary>
+        /// <returns>The minimal Gorebner basis</returns>
         public PolynomialBasis OptimizedBuchberger()
         {
             return this.OptimizedBuchberger(this.polynomialData.ToArray());
