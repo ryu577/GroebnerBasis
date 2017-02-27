@@ -246,7 +246,6 @@ namespace Polynomials
                 List<Tuple<int, int>> bList = b.ToList();
                 foreach (Tuple<int, int> ij in bList)
                 {
-                    //Tuple<int, int> ij = b.First();
                     int i = ij.Item1;
                     int j = ij.Item2;
 
@@ -283,18 +282,18 @@ namespace Polynomials
 
         /// <summary>
         /// The criterion from section 2.9 of CLO. 
-        /// TODO: Details pending a reading of the section.
+        /// If this is satisfied, S_ij can be written as a combination of S_ik and S_jk
         /// </summary>
-        /// <param name="i"></param>
-        /// <param name="j"></param>
-        /// <param name="b"></param>
-        /// <param name="basis"></param>
-        /// <returns>A boolean which is true if the condition is satisfied.</returns>
+        /// <param name="i">ith index in the basis</param>
+        /// <param name="j">jth index in the basis</param>
+        /// <param name="b">The set of all tuples of integers</param>
+        /// <param name="basis">The polynomial basis</param>
+        /// <returns>A boolean which is true if S_ij can be expressed in terms of S_ik and S_jk</returns>
         private bool Criterion(int i, int j, HashSet<Tuple<int, int>> b, List<Polynomial> listBasis)
         {
             for (int k = 0; k < listBasis.Count; k++)
             {
-                if (!b.Contains(Tuple.Create(i,k)) && !b.Contains(Tuple.Create(j,k)) && !b.Contains(Tuple.Create(k,i)) && !b.Contains(Tuple.Create(k,j))
+                if (!b.Contains(Tuple.Create(Math.Min(i,k), Math.Max(i,k))) && !b.Contains(Tuple.Create(Math.Min(j,k), Math.Max(j,k))) 
                     && listBasis[k].GetLeadingTerm().Divides(listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm())) 
                     && k != i && k != j)
                 {

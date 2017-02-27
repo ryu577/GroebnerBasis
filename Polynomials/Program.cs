@@ -37,8 +37,8 @@ namespace Polynomials
             System.Console.WriteLine("\n## Parsing polynomials from a string ##");
             TestString2GroebnerBasis();
 
-            System.Console.WriteLine("\n## Testing optimized buchberger ##");
-            TestOptimizedBuchberger();
+            //System.Console.WriteLine("\n## Testing optimized buchberger ##");
+            //TestOptimizedBuchberger();
 
             System.Console.ReadKey();
         }
@@ -62,10 +62,11 @@ namespace Polynomials
 
             PolynomialBasis pb = new PolynomialBasis
             (
-                "x^3 - 2xy",
-                "x^2y - 2y^2 + x"
+                "x^2 + y^2 + z^2 - 8",
+                "x^2 + z^2 - y",
+                "x - z + y - 2"
             );
-                        
+
             pb.SimplifiedBuchberger();
             pb.PrettyPrint();
         }
