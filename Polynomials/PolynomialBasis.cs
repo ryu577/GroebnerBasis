@@ -249,8 +249,12 @@ namespace Polynomials
                     int i = ij.Item1;
                     int j = ij.Item2;
 
-                    if (listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm()) != listBasis[i].GetLeadingTerm() * (listBasis[j].GetLeadingTerm())
-                        && !this.Criterion(i, j, b, listBasis))
+                    if ( // First, is the combination relatively prime (see propositions 4 of section 2.9, CLO)? If so, we know the remainder by G will be zero.
+                         // So, just skip the if condition and remove it.
+                        listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm()) != listBasis[i].GetLeadingTerm() * (listBasis[j].GetLeadingTerm())
+                        // Next, is it possible to remove this combination? If so, skip the if and remove ij.
+                        && !this.Criterion(i, j, b, listBasis)
+                       )
                     {
                         Polynomial s = listBasis[i].GetSPolynomial(listBasis[j]).GetRemainder(new PolynomialBasis(listBasis)); // TODO: Implement remainder method that takes list. It will be more efficient.
                         if (!s.IsZero)
@@ -259,13 +263,13 @@ namespace Polynomials
                             listBasis.Add(s);
 
                             for (int l = 0; l < t; l++)
-                            {
+                            { // We need to consider all combinations with this new polynomial that was introduced.
                                 b.Add(Tuple.Create(l, t)); // l will always be smaller than t.
                             }
                         }
                     }
 
-                    b.Remove(ij);
+                    b.Remove(ij); // ij has already been considered and its S-polynomial (if non-zero) added. So, we don't need to consider it again.
                 }
             }
 
@@ -287,6 +291,8 @@ namespace Polynomials
         /// <summary>
         /// The criterion from section 2.9 of CLO. 
         /// If this is satisfied, S_ij can be written as a combination of S_ik and S_jk
+        /// and hence removed from the basis of Syzgzies. 
+        /// When the algorithm starts, criterion will be satisfied less often and when it is close to ending, more often.
         /// </summary>
         /// <param name="i">ith index in the basis</param>
         /// <param name="j">jth index in the basis</param>
@@ -297,9 +303,13 @@ namespace Polynomials
         {
             for (int k = 0; k < listBasis.Count; k++)
             {
-                if (!b.Contains(Tuple.Create(Math.Min(i,k), Math.Max(i,k))) && !b.Contains(Tuple.Create(Math.Min(j,k), Math.Max(j,k))) 
-                    && listBasis[k].GetLeadingTerm().Divides(listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm())) 
-                    && k != i && k != j)
+                if (
+                    k != i && k != j && // First check k is even eligible so we don't waste time looking for it in b.
+                    // If b does not contain ik and jk, it means their S polynomials are either already added to listBasis and if not, then they won't be added in the future.
+                    // This means ik and jk can be used to eliminate ij (?) - http://math.stackexchange.com/questions/2163281/buchbergers-algorithm-why-not-eliminate-s-paris-when-they-are-in-basis-set
+                    !b.Contains(Tuple.Create(Math.Min(i,k), Math.Max(i,k))) && !b.Contains(Tuple.Create(Math.Min(j,k), Math.Max(j,k))) &&
+                    listBasis[k].GetLeadingTerm().Divides(listBasis[i].GetLeadingTerm().LCM(listBasis[j].GetLeadingTerm())) 
+                    )
                 {
                     return true;
                 }
