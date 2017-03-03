@@ -426,6 +426,11 @@ namespace Polynomials
                                 System.Console.Write(this.indiceToVariable[j]);
                             }
                         }
+
+                        if (m.powers.Sum() == 0 && (p.monomialData[m] == 1 || p.monomialData[m] == -1))
+                        {
+                            System.Console.Write("1"); // If there is a constant term with coefficient 1, then we do need to print it.
+                        }
                     }
                 }
 

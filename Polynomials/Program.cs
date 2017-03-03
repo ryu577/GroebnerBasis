@@ -10,6 +10,7 @@ namespace Polynomials
     {
         static void Main(string[] args)
         {
+            /*
             System.Console.WriteLine("\n## Univariate polynomial division ##");
             TestOneVariablePolynomialDivision();
 
@@ -37,10 +38,163 @@ namespace Polynomials
             System.Console.WriteLine("\n## Parsing polynomials from a string ##");
             TestString2GroebnerBasis();
 
-            //System.Console.WriteLine("\n## Testing optimized buchberger ##");
-            //TestOptimizedBuchberger();
+            System.Console.WriteLine("\n## Testing optimized buchberger ##");
+            TestOptimizedBuchberger();
+            */
 
-            System.Console.ReadKey();
+            System.Console.WriteLine("\n## CLO Section 2.8 exercise 1 ##");
+            CLOSecn2Pt8Exerc10();
+
+            System.Console.ReadLine();
+        }
+
+        /**************************
+         * Now for expercies from section 8 of CLO 
+         *************************/
+
+        public static void CLOSecn2Pt8Exerc1()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "xy^3 - z^2 + y^5 - z^3",
+                "-x^3 + y",
+                "x^2y - z"
+            );
+
+            PolynomialBasis gb = pb.OptimizedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc2()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (                
+                "xy + 2z^2", // Ensure that y appears before z in the equations.
+                "y - z",
+                "xz - y",
+                "x^3z - 2y^2"
+            );
+
+            PolynomialBasis gb = pb.SimplifiedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc3()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "x^2 + y^2 + z^2 - 1", // Ensure that y appears before z in the equations.
+                "x^2 + y^2 + z^2 - 2x",
+                "2x - 3y - z"
+            );
+
+            PolynomialBasis gb = pb.SimplifiedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc4()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "x^2y - z^3", 
+                "2xy - 4z - 1",
+                "z - y^2",
+                "x^3 - 4zy"
+            );
+
+            PolynomialBasis gb = pb.OptimizedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc5()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "4x^3+4xy^2-8x-3",
+                "4y^3+4yx^2-8y-3"
+            );
+
+            PolynomialBasis gb = pb.SimplifiedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc6()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "t + u -x",
+                "t^2 + 2tu - y",
+                "t^3+3t^2u-z"
+            );
+
+            PolynomialBasis gb = pb.OptimizedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc7()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "ut - x",
+                "1-u-y",
+                "u+t-ut-z"
+            );
+
+            PolynomialBasis gb = pb.SimplifiedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc8()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "a^2 + b^2 -1",
+                "c^2 + d^2 -1",
+                "ac + 2c - x",
+                "ad + 2d - y",
+                "b - z"                
+            );
+
+            PolynomialBasis gb = pb.SimplifiedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc9()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "a^2 + b^2 -1",
+                "8a^5 -2a^3 -3a - x",
+                "8b^5 - 18b^3 + 9b -y",
+                "2ab - z"
+            );
+
+            PolynomialBasis gb = pb.OptimizedBuchberger();
+            gb.PrettyPrint();
+        }
+
+        public static void CLOSecn2Pt8Exerc10()
+        {
+            Monomial.orderingScheme = "lex";
+            PolynomialBasis pb = new PolynomialBasis
+            (
+                "4lx + 2x - 2",
+                "2ly + 2y - 2",
+                "2lz + 2z - 2",
+                "x^4 + y^2 + z^2 -1"
+            );
+
+            PolynomialBasis gb = pb.OptimizedBuchberger();
+            gb.PrettyPrint();
         }
 
         public static void TestOptimizedBuchberger()

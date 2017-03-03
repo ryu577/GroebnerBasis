@@ -59,7 +59,7 @@ namespace Polynomials
             Monomial[] monomArray = new Monomial[numMonomials];
             double[] coeffs = new double[numMonomials];
 
-            string[] terms = eqn.Split(new string[] { "+", "-" }, StringSplitOptions.None);
+            string[] terms = eqn.Split(new char[] { '+', '-' }, StringSplitOptions.None);
             int j = 0;
 
             foreach (string term in terms)
