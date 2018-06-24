@@ -15,5 +15,5 @@ You can execute the code via Program.cs.
 
 All algorithms are based on the book - <a href="http://www.dm.unipi.it/~caboara/Misc/Cox,%20Little,%20O'Shea%20-%20Ideals,%20varieties%20and%20algorithms.pdf">Ideals, Varieties and Algorithms by Cox, Little and O'Shea</a> 
 
-In comments and documentation, "CLO" referes to this book (Cox, Little and O'Shea). I wrote a <a href="https://ryu577.github.io/jekyll/update/2017/01/22/buchbergers_algo_groebner_basis.html">blog</a> on this topic providing some background.
+In comments and documentation, "CLO" referes to this book (Cox, Little and O'Shea). I wrote a <a href="https://ryu577.github.io/jekyll/update/2017/01/23/buchbergers_algo_groebner_basis.html">blog</a> on this topic providing some background.
 
