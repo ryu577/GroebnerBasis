@@ -274,6 +274,7 @@ namespace Polynomials
             }
 
             PolynomialBasis grb = new PolynomialBasis(listBasis);
+            grb.indiceToVariable = this.indiceToVariable;
             grb.MakeMinimal(); // First minimal and then reduced.
             grb.MakeReduced();
             return grb;
